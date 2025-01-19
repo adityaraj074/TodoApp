@@ -16,21 +16,54 @@ const LoginScreen = ({navigation}) => {
   const handleLogin = () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter email and password!');
-    } else {
-      auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(res => {
-          console.log(res, 'User account signed in!');
-        })
-        .catch(error => {
-          if (error.code === 'auth/invalid-email-password') {
-            Alert.alert('Error', 'Invalid email or password!');
-            console.log('Invalid email or password!');
-          }
-
-          console.error(error);
-        });
+      return;
     }
+
+    // Validate email format
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      Alert.alert('Error', 'Invalid email format! Please check your email.');
+      return;
+    }
+
+    auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(res => {
+        console.log(res, 'User account signed in!');
+        Alert.alert('Success', 'Logged in successfully!');
+      })
+      .catch(error => {
+        switch (error.code) {
+          case 'auth/user-not-found':
+            Alert.alert('Error', 'Invalid email! Please check your email.');
+            console.log('Invalid email! Email not registered.');
+            break;
+
+          case 'auth/wrong-password':
+            Alert.alert('Error', 'Invalid password! Please try again.');
+            console.log('Invalid password!');
+            break;
+
+          case 'auth/invalid-email':
+            Alert.alert(
+              'Error',
+              'Invalid email format! Please check your email.',
+            );
+            console.log('Invalid email format!');
+            break;
+
+          case 'auth/invalid-credential':
+            Alert.alert(
+              'Error',
+              'The supplied credential is invalid. Please try again.',
+            );
+            console.log('Invalid or expired credential!');
+            break;
+
+          default:
+            Alert.alert('Error', 'An error occurred. Please try again.');
+            console.error('Firebase Auth Error:', error.code, error.message);
+        }
+      });
   };
 
   return (

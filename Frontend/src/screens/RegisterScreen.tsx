@@ -16,24 +16,63 @@ const RegisterScreen = () => {
   const handleSignup = () => {
     if (!email || !password) {
       Alert.alert('Error', 'All fields are required!');
-    } else {
-      auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          console.log('User account created & signed in!');
-        })
-        .catch(error => {
-          if (error.code === 'auth/email-already-in-use') {
-            console.log('That email address is already in use!');
-          }
-
-          if (error.code === 'auth/invalid-email') {
-            console.log('That email address is invalid!');
-          }
-
-          console.error(error);
-        });
+      return;
     }
+
+    // Validate email format.
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      Alert.alert('Error', 'Invalid email format! Please check your email.');
+      return;
+    }
+
+    // Check for minimum password length.
+    if (password.length < 6) {
+      Alert.alert(
+        'Error',
+        'The password is too short. Please use at least 6 characters.',
+      );
+      return;
+    }
+
+    auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(() => {
+        console.log('User account created & signed in!');
+        Alert.alert('Success', 'Account created successfully!');
+      })
+      .catch(error => {
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            Alert.alert('Alert', 'That email is already in use!');
+            console.log('That email is already in use!');
+            break;
+
+          case 'auth/invalid-email':
+            Alert.alert('Alert', 'That email is invalid!');
+            console.log('That email is invalid!');
+            break;
+
+          case 'auth/weak-password':
+            Alert.alert(
+              'Error',
+              'The password is too weak. Please use a stronger password!',
+            );
+            console.log('Weak password!');
+            break;
+
+          case 'auth/invalid-credential':
+            Alert.alert(
+              'Error',
+              'The supplied credential is invalid or has expired. Please try again.',
+            );
+            console.log('Invalid or expired credential!');
+            break;
+
+          default:
+            Alert.alert('Alert', 'An error occurred. Please try again.');
+            console.error('Firebase Auth Error:', error.code, error.message);
+        }
+      });
   };
 
   return (

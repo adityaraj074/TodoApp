@@ -5,32 +5,50 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from 'react-native';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
+import {addTask} from '../action/todo';
+import {addTodo} from '../store/todoSlice';
 
 const AddTaskScreen = ({navigation, route}) => {
   const uid = useSelector(state => state.user.user.uid);
+  const dispatch = useDispatch();
   console.log(uid, 'uid');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
   const [priority, setPriority] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleAddTask = () => {
+  const handleAddTask = async () => {
     if (title && description && deadline && priority) {
       const newTask = {
-        id: Date.now().toString(),
         title,
         description,
         deadline,
         priority,
         completed: false,
+        uid,
       };
 
-      // Navigate back to TaskListScreen and pass the new task data
-      navigation.navigate('TaskList', {newTask});
+      setIsLoading(true);
+
+      try {
+        const response = await addTask(newTask);
+        // console.log(response, 'response.....');
+        dispatch(addTodo(response.task));
+        console.log(response, 'Task added successfully');
+        Alert.alert('Success', 'Task added successfully');
+        navigation.navigate('TaskList', {newTask});
+      } catch (error) {
+        // console.error(error);
+        Alert.alert('error', 'Failed to add task');
+      } finally {
+        setIsLoading(false);
+      }
     } else {
-      alert('Please fill out all fields');
+      Alert.alert('error', 'Please fill out all fields');
     }
   };
 
@@ -65,8 +83,13 @@ const AddTaskScreen = ({navigation, route}) => {
         style={styles.input}
         placeholderTextColor="#888"
       />
-      <TouchableOpacity style={styles.button} onPress={handleAddTask}>
-        <Text style={styles.buttonText}>Add Task</Text>
+      <TouchableOpacity
+        style={[styles.button, isLoading && {backgroundColor: '#888'}]}
+        onPress={handleAddTask}
+        disabled={isLoading}>
+        <Text style={styles.buttonText}>
+          {isLoading ? 'Adding...' : 'Add Task'}
+        </Text>
       </TouchableOpacity>
     </View>
   );

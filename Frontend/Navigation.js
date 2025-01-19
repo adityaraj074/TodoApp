@@ -23,7 +23,7 @@ const MainNavigator = () => {
       dispatch(setuser(user));
       if (initializing) setInitializing(false);
     });
-    return subscriber; // unsubscribe on unmount
+    return subscriber;
   }, [initializing]);
 
   if (initializing) {

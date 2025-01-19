@@ -1,6 +1,6 @@
 const Task = require("../models/taskModel");
 
-// Get all tasks for a specific user
+// Get all tasks
 exports.getTasks = async (req, res) => {
   const { uid } = req.params;
   try {
@@ -26,7 +26,7 @@ exports.addTask = async (req, res) => {
   }
 };
 
-// Update a task's completion status
+// Update a task's
 exports.markTaskCompleted = async (req, res) => {
   const { id } = req.params;
   try {

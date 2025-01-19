@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -11,42 +11,34 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import styles from '../styles/TaskListStyle';
 import auth from '@react-native-firebase/auth';
+import {useSelector, useDispatch} from 'react-redux';
+import {markTaskCompleted, TaskDelete, viewAllTodo} from '../action/todo';
+import {deleteTodo, markCompleted, replaceTodos} from '../store/todoSlice';
 
 const TaskListScreen = () => {
   const navigation = useNavigation();
-  const [tasks, setTasks] = useState([
-    {
-      id: '1',
-      title: 'Buy groceries',
-      description: 'Milk, Bread, Eggs',
-      completed: false,
-      priority: 'High',
-      deadline: '2025-01-20',
-    },
-    {
-      id: '2',
-      title: 'Complete report',
-      description: 'Monthly sales report',
-      completed: true,
-      priority: 'Medium',
-      deadline: '2025-01-18',
-    },
-    {
-      id: '3',
-      title: 'Complete project report',
-      description: 'Finalize and submit the project report',
-      completed: false,
-      priority: 'Medium',
-      deadline: '2025-01-18',
-    },
-  ]);
+  const dispatch = useDispatch();
+  const uid = useSelector(state => state.user?.user?.uid);
+  const tasks = useSelector(state => state.todo.todo);
 
-  const markAsCompleted = id => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === id ? {...task, completed: true} : task,
-      ),
-    );
+  const markAsCompleted = async id => {
+    try {
+      const response = await markTaskCompleted(id);
+      console.log(response, 'response.....');
+      dispatch(markCompleted(id));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteHandler = async id => {
+    try {
+      const response = await TaskDelete(id);
+      console.log(response, 'response.....');
+      dispatch(deleteTodo(id));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const deleteTask = id => {
@@ -55,9 +47,7 @@ const TaskListScreen = () => {
       {
         text: 'Delete',
         style: 'destructive',
-        onPress: () => {
-          setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
-        },
+        onPress: deleteHandler.bind(null, id),
       },
     ]);
   };
@@ -75,6 +65,17 @@ const TaskListScreen = () => {
     navigation.navigate('AddTaskList');
   };
 
+  useEffect(() => {
+    viewAllTodo(uid)
+      .then(res => {
+        dispatch(replaceTodos(res));
+        console.log(res, 'res.....');
+      })
+      .catch(e => {
+        console.log(e, 'error');
+      });
+  }, []);
+
   const renderTask = ({item}) => (
     <ScrollView style={styles.taskItem}>
       <Text style={[styles.taskTitle, item.completed && styles.completed]}>
@@ -88,13 +89,13 @@ const TaskListScreen = () => {
         {!item.completed && (
           <TouchableOpacity
             style={styles.completeButton}
-            onPress={() => markAsCompleted(item.id)}>
+            onPress={() => markAsCompleted(item._id)}>
             <Text style={styles.buttonText}>Complete</Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => deleteTask(item.id)}>
+          onPress={() => deleteTask(item._id)}>
           <Text style={styles.buttonText}>Delete</Text>
         </TouchableOpacity>
       </View>
@@ -110,7 +111,7 @@ const TaskListScreen = () => {
       {tasks.length > 0 ? (
         <FlatList
           data={tasks}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item._id}
           renderItem={renderTask}
           contentContainerStyle={styles.taskList}
         />
