@@ -28,8 +28,7 @@ const LoginScreen = ({navigation}) => {
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(res => {
-        console.log(res, 'User account signed in!');
-        Alert.alert('Success', 'Logged in successfully!');
+        // console.log(res, 'User account signed in!');
       })
       .catch(error => {
         switch (error.code) {
@@ -40,7 +39,7 @@ const LoginScreen = ({navigation}) => {
 
           case 'auth/wrong-password':
             Alert.alert('Error', 'Invalid password! Please try again.');
-            console.log('Invalid password!');
+            // console.log('Invalid password!');
             break;
 
           case 'auth/invalid-email':
@@ -48,7 +47,7 @@ const LoginScreen = ({navigation}) => {
               'Error',
               'Invalid email format! Please check your email.',
             );
-            console.log('Invalid email format!');
+            // console.log('Invalid email format!');
             break;
 
           case 'auth/invalid-credential':

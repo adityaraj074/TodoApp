@@ -17,11 +17,6 @@ app.use(express.json());
 // API Routes
 app.use("/api/tasks", taskRoutes);
 
-// Routes
-// app.use("/api/auth", require("./routes/authRoutes"));
-// app.use("/api/otp", require("./routes/otpRoutes"));
-// app.use("/api/reset", require("./routes/resetRoutes"));
-
 // Start Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
