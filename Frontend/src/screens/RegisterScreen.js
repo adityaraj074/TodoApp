@@ -61,10 +61,7 @@ const RegisterScreen = () => {
             break;
 
           case 'auth/invalid-credential':
-            Alert.alert(
-              'Error',
-              'The supplied credential is invalid or has expired. Please try again.',
-            );
+            Alert.alert('Error', 'Invalid credential. Please try again.');
             console.log('Invalid or expired credential!');
             break;
 

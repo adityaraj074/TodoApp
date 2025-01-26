@@ -36,19 +36,19 @@ const AddTaskScreen = ({navigation, route}) => {
 
       try {
         const response = await addTask(newTask);
-        // console.log(response, 'response.....');
+        console.log(response, 'response.....');
         dispatch(addTodo(response.task));
         console.log(response, 'Task added successfully');
         Alert.alert('Success', 'Task added successfully');
         navigation.navigate('TaskList', {newTask});
       } catch (error) {
-        // console.error(error);
-        Alert.alert('error', 'Failed to add task');
+        console.error(error);
+        Alert.alert('Error', 'Failed to add task');
       } finally {
         setIsLoading(false);
       }
     } else {
-      Alert.alert('error', 'Please fill out all fields');
+      Alert.alert('Error', 'Please fill out all fields');
     }
   };
 

@@ -51,10 +51,7 @@ const LoginScreen = ({navigation}) => {
             break;
 
           case 'auth/invalid-credential':
-            Alert.alert(
-              'Error',
-              'The supplied credential is invalid. Please try again.',
-            );
+            Alert.alert('Error', 'Invalid details. Please try again.');
             console.log('Invalid or expired credential!');
             break;
 

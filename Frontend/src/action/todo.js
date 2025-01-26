@@ -1,5 +1,5 @@
 import axios from 'axios';
-const servalUrl = 'http://192.168.1.16:3000/api/';
+const servalUrl = 'http://192.168.1.7:3000/api/';
 
 const addTask = async params => {
   try {
